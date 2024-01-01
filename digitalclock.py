@@ -23,6 +23,20 @@ class Line:
     def off(self):
         self.canvas.itemconfig(self.id, fill = "black")
 
+class Oval:
+    def __init__(self, point:tuple, d,color:str,canvas):
+        self.coords = point
+        self.d = d
+        self.color = color
+        self.canvas = canvas
+        self.id = canvas.create_oval(point[0],point[1],point[0]+d,point[1]+d,fill=color, outline = '')
+
+    def on(self):
+        self.canvas.itemconfig(self.id, fill = self.color)
+    def off(self):
+
+        self.canvas.itemconfig(self.id,fill='black')
+
 
 class Segment:
     def __init__(self, point: tuple, small: int, big: int, color: str, canvas):
@@ -95,13 +109,20 @@ class Segment:
 class Clock:
     # sklada sa zo 6 segmentov
     # metoda on (zobrat systemovy cas, rozbit na cislice)
-    def __init__(self, time:str, color: str, canvas, small:int, big:int, point:tuple):
+    def __init__(self, color: str, canvas, small:int, big:int, point:tuple):
         self.canvas = canvas
         self.small = small
         self.big = big
         self.point = point
-        self.segments = [Segment((point[0] + i * (2 * small + big + 20), point[1]), small, big, color, canvas) for i in
-                         range(6)]
+        self.segments = []
+        self.ovals = []
+        for i in range(6):
+            if i%2==0 or i ==5:
+                self.segments.append(Segment((point[0] + i * (2 * small + big +20), point[1]), small, big, color, canvas))
+            else:
+                self.segments.append(Segment((point[0] + i * (2 * small + big +20), point[1]), small, big, color, canvas))
+                self.ovals.append(Oval((point[0]+(i+1)*(2 * small + big + 20)-(20+8)/2,point[1]+(3*small+2*big)/4),8,color,canvas))
+                self.ovals.append(Oval((point[0]+(i+1)*(2 * small + big + 20)-(20+8)/2,point[1]+(3*small+2*big)*3/4),8,color,canvas))
         self.update_clock()
 
 
@@ -117,15 +138,10 @@ class Clock:
 
 
 
-    # def drbacka(self):
-    #     for i in 
-tim = time.strftime("%H:%M:%S")
-tim = tim.split(':')
 
 
-#skuska = Segment((50, 50), 10, 100, "red", canvas).display(0)
-#skuska2 = Line((500, 500), 100, 20, "red", canvas)
-skuska = Clock(datetime.now(), 'red', canvas, 10,70,(10,50))
-#print(skuska.time_doer(), type(skuska.time_doer()))
+
+skuska = Clock('red', canvas, 10,50,(100,100))
+
 
 root.mainloop()
